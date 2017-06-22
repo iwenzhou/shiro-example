@@ -10,11 +10,11 @@ import org.apache.shiro.realm.Realm;
  * @description 自定义Realm类,需重写如下三个方法,自定义完了之后,可配置到配置文件中调用
  */
 
-public class MyRealm implements Realm
+public class MyRealm1 implements Realm
 {
     public String getName()
     {
-        return "MyRealm Name";
+        return "MyRealm1 Name";
     }
 
     public boolean supports(AuthenticationToken authenticationToken)
@@ -28,7 +28,7 @@ public class MyRealm implements Realm
         //获取用户名
         String username = (String) authenticationToken.getPrincipal();
         //获取密码
-        String password = (String) authenticationToken.getCredentials();
+        String password = new String((char[])authenticationToken.getCredentials());
 
         if(!"admin".equals(username))
         {
