@@ -11,6 +11,7 @@
     <modules>
         <module>shiro-01-quickstart</module>
         <module>shiro-02-spring</module>
+        <module>shiro-demo</module>
     </modules>
 
 
