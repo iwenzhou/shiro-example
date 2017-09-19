@@ -31,10 +31,9 @@ public class ShiroController
 			UsernamePasswordToken token = new UsernamePasswordToken(username, password);
 			token.setRememberMe(true);
 			
-			System.out.println("执行登录：" + token.hashCode());
-			
 			try {
 				currentUser.login(token);
+				System.out.println("登录成功：[ " + username + " ]");
 			} catch (AuthenticationException e) {
 				e.printStackTrace();
 				System.out.println("登录失败："+e.getMessage());

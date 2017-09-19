@@ -110,7 +110,7 @@
             <value>
                 /login.jsp = anon
                 /shiro/login.do = anon
-
+                /shiro/logout.do = logout
 
                 # everything else requires authentication:
                 /** = authc

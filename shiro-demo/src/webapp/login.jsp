@@ -13,7 +13,7 @@
 <body>
 	<h4>Login Page</h4>
 
-	<form action="shiro/login.do" method="post">
+	<form action="./shiro/login.do" method="post">
 
 		Username: <input type="text" name="username" id="username">
 		<br><br>
