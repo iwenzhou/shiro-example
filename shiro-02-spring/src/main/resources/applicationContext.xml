@@ -97,8 +97,6 @@
             <value>
                 /login.jsp = anon
 
-                # allow WebStart to pull the jars for the swing app:
-                /*.jar = anon
                 # everything else requires authentication:
                 /** = authc
             </value>
