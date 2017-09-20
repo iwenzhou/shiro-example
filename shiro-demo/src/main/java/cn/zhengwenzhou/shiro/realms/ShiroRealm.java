@@ -7,20 +7,29 @@ import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.crypto.hash.SimpleHash;
-import org.apache.shiro.realm.AuthenticatingRealm;
+import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author 郑文洲
  * @version 1.0
  * @date 2017/09/17 22:35
  * @description 自定义Shiro Realm
+ * 1. 授权需要继承 AuthorizingRealm 类, 并实现其 doGetAuthorizationInfo 方法
+ * 2. AuthorizingRealm 类继承自 AuthenticatingRealm, 但没有实现 AuthenticatingRealm 中的
+ *    doGetAuthenticationInfo, 所以认证和授权只需要继承 AuthorizingRealm 就可以了. 同时实现他的两个抽象方法.
  */
 
-public class ShiroRealm extends AuthenticatingRealm
+public class ShiroRealm extends AuthorizingRealm
 {
-	
+	//用于认证的方法
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException
 	{
@@ -79,6 +88,30 @@ public class ShiroRealm extends AuthenticatingRealm
 		return authenticationInfo;
 	}
 	
+	//用于授权的方法
+	@Override
+	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection)
+	{
+		System.out.println("doGetAuthorizationInfo ....");
+		
+		//1.从 PrincipalCollection 中获取登录用户的信息(当设置多Realms时，获取也是有先后顺序的)
+		Object principal = principalCollection.getPrimaryPrincipal();
+		
+		//2.利用登录的用户信息来查询当前用户的角色或权限（可能需要查询数据库）
+		Set<String> roles = new HashSet<String>();
+		roles.add("user");
+		if("admin".equals(principal))
+		{
+			roles.add("admin");
+		}
+		
+		//3.创建 SimpleAuthorizationInfo 对象，并设置其rele属性
+		SimpleAuthorizationInfo info = new SimpleAuthorizationInfo(roles);
+		
+		//4.返回 SimpleAuthorizationInfo 对象
+		
+		return info;
+	}
 	
 	public static void main(String[] args)
 	{
@@ -91,5 +124,4 @@ public class ShiroRealm extends AuthenticatingRealm
 		System.out.println(result);
 		
 	}
-	
 }

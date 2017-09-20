@@ -73,7 +73,7 @@ public class SecondRealm extends AuthenticatingRealm
 		//加盐的AuthenticationInfo对象，会根据盐值进行比较
 		//4.) credentialsSalt：盐值,尽量每个用户的盐值都是唯一的，这样加密后的密文也是唯一的
 		ByteSource credentialsSalt = ByteSource.Util.bytes(username);
-		
+		principal = "SecondRealm";
 		SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(principal, credentials, credentialsSalt, realmName);
 		
 		return authenticationInfo;
