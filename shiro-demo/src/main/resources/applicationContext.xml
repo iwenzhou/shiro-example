@@ -20,8 +20,22 @@
         <property name="cacheManager" ref="cacheManager"/>
         <!--指定单个Realm数据源-->
         <!--<property name="realm" ref="jdbcRealm"/>-->
-        <!--指定多个Realm数据源-->
+        <!--指定多个Realm数据源，及认证策略-->
         <property name="authenticator" ref="authenticator"/>
+        <!--指定多个Realm数据源：可以在authenticator当中配置realms，也可在securityManager当中配置-->
+        <property name="realms">
+            <!--
+                1.为什么在此配置多Realm
+                  在做授权时，需要从securityManager当中获取Realms
+                2.为什么在securityManager当中配置，authenticator（ModularRealmAuthenticator）也可获取到Realms
+                  系统在初始化时，会判断authenticator是否有设置realms，如果没有则会从securityManager当中获取，可以断点：org.apache.shiro.authc.pam.ModularRealmAuthenticator.setRealms
+            -->
+            <!--执行时按照配置的先后顺序验证-->
+            <list>
+                <ref bean="jdbcRealm"/>
+                <ref bean="secondRealm"/>
+            </list>
+        </property>
     </bean>
 
     <!-- Let's use some enterprise caching support for better performance.  You can replace this with any enterprise
@@ -59,19 +73,21 @@
         还可以设置多个Realm只要登录一个验证通过就登录成功，或都验证成功才登录成功
     -->
     <bean id="authenticator" class="org.apache.shiro.authc.pam.ModularRealmAuthenticator">
+        <!--指定多个Realm数据源：可以在authenticator当中配置realms，也可在securityManager当中配置-->
+        <!--已在securityManager当中配置，两处配置都一样
         <property name="realms">
             <list>
-                <!--执行时按照配置的先后顺序验证-->
                 <ref bean="jdbcRealm"/>
                 <ref bean="secondRealm"/>
             </list>
         </property>
+        -->
         <!--认证策略-->
         <property name="authenticationStrategy">
             <!--都要认证成功才能登录-->
-            <bean class="org.apache.shiro.authc.pam.AllSuccessfulStrategy"></bean>
+            <!--<bean class="org.apache.shiro.authc.pam.AllSuccessfulStrategy"></bean>-->
             <!--只要有一个Realm验证成功即可，默认-->
-            <!--<bean class="org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy"></bean>-->
+            <bean class="org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy"></bean>
         </property>
     </bean>
 
