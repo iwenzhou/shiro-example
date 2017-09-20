@@ -9,6 +9,7 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.realm.AuthenticatingRealm;
+import org.apache.shiro.util.ByteSource;
 
 /**
  * @author 郑文洲
@@ -55,8 +56,24 @@ public class ShiroRealm extends AuthenticatingRealm
 		//3). realmName：当前realm对象的name，调用父类的getName()即可
 		String realmName = getName();
 		
-		SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(principal, credentials, realmName);
-				
+		if("admin".equals(username))
+		{
+			credentials = "928bfd2577490322a6e19b793691467e";
+		}
+		if("user".equals(username))
+		{
+			credentials = "b8c2d5b0a37cc51f91d5e8970347a3a3";
+		}
+		
+		//普通的AuthenticationInfo对象，会根据配置的密码对比策略进行比较
+		//SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(principal, credentials, realmName);
+		
+		//加盐的AuthenticationInfo对象，会根据盐值进行比较
+		//4.) credentialsSalt：盐值,尽量每个用户的盐值都是唯一的，这样加密后的密文也是唯一的
+		ByteSource credentialsSalt = ByteSource.Util.bytes(username);
+		
+		SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(principal, credentials, credentialsSalt, realmName);
+		
 		return authenticationInfo;
 	}
 	
@@ -65,7 +82,7 @@ public class ShiroRealm extends AuthenticatingRealm
 	{
 		String hashAlgorithmName = "MD5";
 		Object credentials = "123456";
-		Object salt = null;
+		Object salt = ByteSource.Util.bytes("user");
 		int hashIterations = 2;
 		Object result = new SimpleHash(hashAlgorithmName, credentials, salt, hashIterations);
 		
