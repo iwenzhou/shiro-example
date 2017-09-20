@@ -18,13 +18,13 @@ import org.apache.shiro.util.ByteSource;
  * @description 自定义Shiro Realm
  */
 
-public class ShiroRealm extends AuthenticatingRealm
+public class SecondRealm extends AuthenticatingRealm
 {
 	
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException
 	{
-		System.out.println("ShiroRealm doGetAuthenticationInfo");
+		System.out.println("SecondRealm doGetAuthenticationInfo");
 		
 		//1.把AuthenticationToken转换为UsernamePasswordToken
 		UsernamePasswordToken usernamePasswordToken = (UsernamePasswordToken) authenticationToken;
@@ -60,11 +60,11 @@ public class ShiroRealm extends AuthenticatingRealm
 		
 		if("admin".equals(username))
 		{
-			credentials = "928bfd2577490322a6e19b793691467e";
+			credentials = "14c33c244faa5ad403e38be03037060e97bc7aea";
 		}
 		if("user".equals(username))
 		{
-			credentials = "b8c2d5b0a37cc51f91d5e8970347a3a3";
+			credentials = "9b51165daa869d7d7162480119108f3119e00249";
 		}
 		
 		//普通的AuthenticationInfo对象，会根据配置的密码对比策略进行比较
@@ -82,9 +82,9 @@ public class ShiroRealm extends AuthenticatingRealm
 	
 	public static void main(String[] args)
 	{
-		String hashAlgorithmName = "MD5";
+		String hashAlgorithmName = "SHA1";
 		Object credentials = "123456";
-		Object salt = ByteSource.Util.bytes("user");
+		Object salt = ByteSource.Util.bytes("admin");
 		int hashIterations = 2;
 		Object result = new SimpleHash(hashAlgorithmName, credentials, salt, hashIterations);
 		

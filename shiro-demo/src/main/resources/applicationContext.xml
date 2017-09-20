@@ -18,7 +18,10 @@
     -->
     <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
         <property name="cacheManager" ref="cacheManager"/>
-        <property name="realm" ref="jdbcRealm"/>
+        <!--指定单个Realm数据源-->
+        <!--<property name="realm" ref="jdbcRealm"/>-->
+        <!--指定多个Realm数据源-->
+        <property name="authenticator" ref="authenticator"/>
     </bean>
 
     <!-- Let's use some enterprise caching support for better performance.  You can replace this with any enterprise
@@ -51,6 +54,28 @@
          Many other realm implementations can be used too (PropertiesRealm,
          LdapRealm, etc. -->
     <!--
+        配置多个Realm
+        应用场景：有可能有多个数据库，MySQL和Oracle，两个数据库的加密算法不一样，如MySQL使用MD5加密，而Oracle使用SHA1加密
+        还可以设置多个Realm只要登录一个验证通过就登录成功，或都验证成功才登录成功
+    -->
+    <bean id="authenticator" class="org.apache.shiro.authc.pam.ModularRealmAuthenticator">
+        <property name="realms">
+            <list>
+                <!--执行时按照配置的先后顺序验证-->
+                <ref bean="jdbcRealm"/>
+                <ref bean="secondRealm"/>
+            </list>
+        </property>
+        <!--认证策略-->
+        <property name="authenticationStrategy">
+            <!--都要认证成功才能登录-->
+            <bean class="org.apache.shiro.authc.pam.AllSuccessfulStrategy"></bean>
+            <!--只要有一个Realm验证成功即可，默认-->
+            <!--<bean class="org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy"></bean>-->
+        </property>
+    </bean>
+
+    <!--
     	3. 配置 Realm
     	3.1 直接配置实现了 org.apache.shiro.realm.Realm 接口的 bean
     -->
@@ -61,6 +86,18 @@
             <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
                 <!--设置加密算法为：MD5-->
                 <property name="hashAlgorithmName" value="MD5"></property>
+                <!--设置加密迭代次数：2次-->
+                <property name="hashIterations" value="2"></property>
+            </bean>
+        </property>
+    </bean>
+    <bean id="secondRealm" class="cn.zhengwenzhou.shiro.realms.SecondRealm">
+        <!--设置自定义Realm的密码对比策略-->
+        <property name="credentialsMatcher">
+            <!--设置加密方式为Hash-->
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                <!--设置加密算法为：MD5-->
+                <property name="hashAlgorithmName" value="SHA1"></property>
                 <!--设置加密迭代次数：2次-->
                 <property name="hashIterations" value="2"></property>
             </bean>
